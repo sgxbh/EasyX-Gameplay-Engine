@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Project">
+      <UniqueIdentifier>{037de87b-e60b-42ea-ab94-f5449d63c1e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{431ccb59-1840-4a59-b848-f5a63596f646}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\CoreMinimal">
+      <UniqueIdentifier>{07062f60-81e2-4e3c-af3e-08d87bf9480f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Collider">
+      <UniqueIdentifier>{59922927-2ecf-4c4d-b70e-4e5893a0c934}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Math">
+      <UniqueIdentifier>{12d5a00b-7acd-42be-8566-9cf415e6403a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\SpriteRenderer">
+      <UniqueIdentifier>{4e7a9413-77b4-4fbb-a01a-1a16a35411bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\UI">
+      <UniqueIdentifier>{3b35ae99-cbd7-4d89-9c10-3d9945de1bc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\VusualInterface">
+      <UniqueIdentifier>{ec8d7e41-fa44-4b63-91c7-74c1379546a6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CoreMinimal.h">
+      <Filter>Engine\CoreMinimal</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Engine\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualInterface.h">
+      <Filter>Engine\VusualInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteRenderer.h">
+      <Filter>Engine\SpriteRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Engine\Collider</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Widgets.h">
+      <Filter>Engine\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Level_0.h">
+      <Filter>Project</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Project</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleController.h">
+      <Filter>Project</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform.h">
+      <Filter>Project</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ColliderManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Delegate.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStatics.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="InputComponent.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="RigidBody.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="AttackBox.h">
+      <Filter>Project</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CoreMinimal.cpp">
+      <Filter>Engine\CoreMinimal</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp">
+      <Filter>Engine\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="VisualInterface.cpp">
+      <Filter>Engine\VusualInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteRenderer.cpp">
+      <Filter>Engine\SpriteRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Engine\Collider</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Widgets.cpp">
+      <Filter>Engine\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Level_0.cpp">
+      <Filter>Project</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleController.cpp">
+      <Filter>Project</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform.cpp">
+      <Filter>Project</Filter>
+    </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ColliderManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStatics.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="InputComponent.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="RigidBody.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="AttackBox.cpp">
+      <Filter>Project</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
