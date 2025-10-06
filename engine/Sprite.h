@@ -15,7 +15,7 @@ class Sprite :public Object {
 	void Recover();
 public:
 	Sprite();
-	virtual void BeginPlay() {};
+	virtual void BeginPlay() { Object::BeginPlay(); };
 	virtual void Update();
 	/*void LoadSprite(std::string name);*/
 	void Blink(float duration = 0.2f, COLORREF color = BLACK, int level = 60);

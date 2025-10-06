@@ -7,6 +7,7 @@ void SpriteRenderer::Render()
 {
     if (sprite) {
         Vector2D pos = (GetWorldPosition() - mainWorld.mainCamera->GetCameraPosition()) * 20.f / mainWorld.mainCamera->springArmLength_virtual + Vector2D(WIN_WIDTH / 2, WIN_HEIGHT / 2);
+		
         HDC dstDC = GetImageHDC();
         IMAGE* img = copy ? copy : sprite;
 

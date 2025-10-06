@@ -5,9 +5,13 @@
 void RigidBody::RestrictVelocity(Vector2D impactNormal, RigidBody* another)
 {
 	Vector2D tangentVector = { impactNormal.y, -impactNormal.x };
+	
 
 	Vector2D normalVelocity = Vector2D::ProjectVector(velocity, impactNormal);
 	Vector2D tangentVelocity = Vector2D::ProjectVector(velocity, tangentVector);
+	if (impactNormal.y == 0) {
+		int a = 0;
+	}
 
 	float friction = 0.2f;
 	
@@ -18,7 +22,9 @@ void RigidBody::RestrictVelocity(Vector2D impactNormal, RigidBody* another)
 		{
 			float multiplier = (tangentVelocity.Size() - normalVelocity.Size() * friction) / tangentVelocity.Size();
 			multiplier = Math::Clamp(multiplier, 0.0f, 1.0f);
-			velocity = tangentVelocity * multiplier - normalVelocity;
+			Vector2D newVel  = tangentVelocity * multiplier ;
+
+			pendingVelocity += (newVel - velocity);
 		}
 		return;
 	}
@@ -36,9 +42,14 @@ void RigidBody::RestrictVelocity(Vector2D impactNormal, RigidBody* another)
 	normalVelocity = ( normalVelocity* (mass - restitution * another->mass) +  anotherNormalVelocity* another->mass* (1 + restitution)) / (mass + another->mass);
 	anotherNormalVelocity = (  anotherNormalVelocity* (another->mass - restitution * mass) +   normalVelocity_*(1 + restitution) * mass) / (mass + another->mass);
 
-	velocity = normalVelocity + tangentVelocity;
-	another->velocity = anotherNormalVelocity + anotherTangentVelocity;
+	Vector2D newVelThis = normalVelocity + tangentVelocity;
+	Vector2D newVelAnother = anotherNormalVelocity + anotherTangentVelocity;
+
+	pendingVelocity += (newVelThis - velocity);
+	
 }
+
+
 
 void RigidBody::Update()
 {
@@ -52,22 +63,42 @@ void RigidBody::Update()
 			if (collider->mode != CollisionMode::Collision)continue;
 			for (auto& another : collider->collisions) {
 				if (another->mode != CollisionMode::Collision)continue;
-				RestrictVelocity(-collider->CollisionHit(another).ImpactNormal, another->rigidAttached);
+				HitResult result = collider->CollisionHit(another);
+				Penetrations.push_back({ -result.ImpactNormal ,result.penetration });
+				RestrictVelocity(-result.ImpactNormal, another->rigidAttached);
+				
 			}
 		}
-		for (auto& collider : colliders) {
-			if (collider->mode != CollisionMode::Collision)continue;
-			for (auto& another : collider->collisions) {
-				if (another->mode != CollisionMode::Collision || another->rigidAttached)continue;
-				RestrictVelocity(-collider->CollisionHit(another).ImpactNormal);
-			}
-		}
-		velocity.x = Math::Clamp(velocity.x, -maxSpeed_x, maxSpeed_x);
-		velocity.y = Math::Clamp(velocity.y, -maxSpeed_y, maxSpeed_y);
-		pOwner->AddPosition(velocity * DELTA_TIME);
+		
+		
 
 	}
 	else if (velocity != Vector2D(0, 0))velocity = Vector2D(0, 0);
 	if (bRotatable)pOwner->AddRotation(angularVelocity * DELTA_TIME);
 	
+}
+
+void RigidBody::BeginPlay()
+{
+	mainWorld.RigidBodies.insert(this);
+
+}
+
+void RigidBody::ApplyPendingVelocity()
+{
+	if (bMovable) {
+		for (auto& p : Penetrations)
+		{
+			if (p.penetration <= 5.f) continue;
+			pOwner->AddPosition(p.ImpactNormal * p.penetration * 0.5f); 
+		}
+		Penetrations.clear();
+		
+		velocity += pendingVelocity;
+		pendingVelocity = Vector2D(0, 0);
+
+		velocity.x = Math::Clamp(velocity.x, -maxSpeed_x, maxSpeed_x);
+		velocity.y = Math::Clamp(velocity.y, -maxSpeed_y, maxSpeed_y);
+		pOwner->AddPosition(velocity * DELTA_TIME);
+	}
 }

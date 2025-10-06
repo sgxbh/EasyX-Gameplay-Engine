@@ -6,6 +6,10 @@ void CollisionManager::Initialize()
 	
 	AddMapping(CollisionType::attackbox, CollisionType::b);
 	AddMapping(CollisionType::player, CollisionType::ground);
+	AddMapping(CollisionType::ground, CollisionType::b);
+	AddMapping(CollisionType::player, CollisionType::player);
+	AddMapping(CollisionType::b, CollisionType::WorldStatic);
+	AddMapping(CollisionType::player, CollisionType::WorldStatic);
 	
 }
 

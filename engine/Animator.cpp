@@ -40,7 +40,7 @@ void Animator::SetNode(std::string nodename)
 	aniNode = animations.find(nodename)->second;
 	aniNode->SetIndex(0);
 	aniNode->clock.Continue();
-	std::cout << "setnode" << std::endl;
+	
 }
 
 void Animator::SetCalled(bool called)

@@ -12,6 +12,7 @@ class Camera:public SceneComponent
 	friend class CircleCollider;
 	friend class BoxCollider;
 	friend class Particle;
+	friend class QuadTree<class Collider>;
 	
 	Transform transform_vitual;
 

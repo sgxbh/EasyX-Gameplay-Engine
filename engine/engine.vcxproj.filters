@@ -25,6 +25,9 @@
     <Filter Include="Engine\VusualInterface">
       <UniqueIdentifier>{ec8d7e41-fa44-4b63-91c7-74c1379546a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\QuadTree">
+      <UniqueIdentifier>{cd52b0ce-23d6-489e-b036-17861908f16c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreMinimal.h">
@@ -99,6 +102,13 @@
     <ClInclude Include="AttackBox.h">
       <Filter>Project</Filter>
     </ClInclude>
+    <ClInclude Include="TestBall.h" />
+    <ClInclude Include="QuadTree.h">
+      <Filter>Engine\QuadTree</Filter>
+    </ClInclude>
+    <ClInclude Include="AreaInterFace.h">
+      <Filter>Engine\QuadTree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreMinimal.cpp">
@@ -166,6 +176,10 @@
     </ClCompile>
     <ClCompile Include="AttackBox.cpp">
       <Filter>Project</Filter>
+    </ClCompile>
+    <ClCompile Include="TestBall.cpp" />
+    <ClCompile Include="QuadTree.cpp">
+      <Filter>Engine\QuadTree</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

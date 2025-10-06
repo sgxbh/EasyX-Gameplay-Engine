@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Animator.h" />
+    <ClInclude Include="AreaInterFace.h" />
     <ClInclude Include="AttackBox.h" />
     <ClInclude Include="BattleController.h" />
     <ClInclude Include="Camera.h" />
@@ -143,10 +144,12 @@
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpriteRenderer.h" />
+    <ClInclude Include="TestBall.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="UserInterface.h" />
     <ClInclude Include="VisualInterface.h" />
@@ -168,10 +171,12 @@
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="SpriteRenderer.cpp" />
+    <ClCompile Include="TestBall.cpp" />
     <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="VisualInterface.cpp" />
     <ClCompile Include="Widgets.cpp" />

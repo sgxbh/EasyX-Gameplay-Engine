@@ -9,8 +9,11 @@ class BattleController :public Controller {
 	Timer OverallTimeHandle;
 	Timer ShakeTimer;
 	Timer JumpTimer;
+	Timer RotateO;
+	Timer RotateL;
 
 	class Player* ply;
+	class Shale* shale;
 	class RigidBody* rigidbody;
 	float ArmLength = 20.f;
 
@@ -52,4 +55,7 @@ public:
 	void OnOverlap(Collider* overlapComp, Collider* otherComp, Object* otherActor);
 	void EndOverlap(Collider* overlapComp, Collider* otherComp, Object* otherActor);
 	void Land(Collider* hitComp, Collider* otherComp, Object* otherActor, Vector2D normalImpulse, const HitResult& hitResult);
+
+	void Rotate_O();
+	void Rotate_L();
 };

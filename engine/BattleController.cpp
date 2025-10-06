@@ -11,29 +11,37 @@
 
 BattleController::BattleController()
 {
-	SetLocalPosition(Vector2D(0, -200));
-	//ShakeTimer.Bind(3.f,this, &BattleController::Shake,true);
-	ply = GameStatics::CreateObject<Player>();
-	ply->SetLocalPosition(Vector2D(0, -165));
-	rigidbody = ConstructComponent<RigidBody>();
-	rigidbody->SetGravity(98.f);
-	rigidbody->SetGravityEnable(true);
 	
-	collider = ConstructComponent<BoxCollider>();
-	collider->AttachTo(root);
-	collider->SetSize({ 70,150 });
-	collider->SetLocalPosition({ 0,6 });
+	//ShakeTimer.Bind(3.f,this, &BattleController::Shake,true);
+	ply = GameStatics::CreateObject<Player>({0,-200});
+	this->AttachTo(ply);
+	ply->SetLocalPosition(Vector2D(0, 0));
+	rigidbody = ply->ConstructComponent<RigidBody>();
+	rigidbody->SetGravity(98.f);
+	
+	rigidbody->SetGravityEnable(false);
+
+	shale = GameStatics::CreateObject<Shale>({ 0,0 });
+	shale->AttachTo(ply);
+	shale->SetLocalPosition({ 120,0 });
+	
+	/*collider = ply->ConstructComponent<BoxCollider>();
+	collider->AttachTo(ply->root);
+	collider->SetSize({ 10,40 });
+	collider->SetLocalPosition({ 120,0 });
+	collider->SetType(CollisionType::player);
+	collider->SetCollisionMode(CollisionMode::Collision);*/
 	
 	
 
-	collider_ = ConstructComponent<BoxCollider>();
-	collider_->AttachTo(root);
+	collider_ = ply->ConstructComponent<BoxCollider>();
+	collider_->AttachTo(ply->root);
 	collider_->SetSize({ 133,165 });
 	
 
-	collider->OnComponentBeginOverlap.Add(this, &BattleController::OnOverlap);
+	collider_->OnComponentBeginOverlap.Add(this, &BattleController::OnOverlap);
 
-	collider->OnComponentEndOverlap.Add(this, &BattleController::EndOverlap);
+	collider_->OnComponentEndOverlap.Add(this, &BattleController::EndOverlap);
 	collider_->SetType(CollisionType::player);
 	collider_->SetCollisionMode(CollisionMode::Collision);
 	collider_->OnComponentHit.Add(this, &BattleController::Land);
@@ -50,6 +58,10 @@ BattleController::BattleController()
 	particle->SetLocalPosition({ 0,82 });
 	particle->SetLocalScale({ 0.2,0.2 });
 	particle->SetFadeTime(0.3f);
+
+	RotateO.Bind(0.1f,this, &BattleController::Rotate_O,true);
+	RotateO.Continue();
+	RotateO.Reset();
 }
 
 void BattleController::SetupInputComponent(InputComponent* inputComponent)
@@ -93,12 +105,14 @@ void BattleController::SetupInputComponent(InputComponent* inputComponent)
 void BattleController::Update()
 {
 	Controller::Update();
-	ply->SetLocalPosition(GetWorldPosition());
+	/*ply->SetLocalPosition(GetWorldPosition());*/
+	
+	
 }
 
 void BattleController::Shake()
 {
-	std::cout << "timer run" << std::endl;
+	
 	camera->ShakeCamera(50.f,50);
 }
 
@@ -151,22 +165,22 @@ void BattleController::MoveLeftEnd()
 
 void BattleController::MoveUp()
 {
-	AddPosition(Vector2D(0, -1));
+	ply->AddPosition(Vector2D(0, -1));
 }
 
 void BattleController::MoveDown()
 {
-	AddPosition(Vector2D(0, 1));
+	ply->AddPosition(Vector2D(0, 1));
 }
 
 void BattleController::ZoomIn()
 {
-	camera->SetSpringArmLength(ArmLength -= 0.05f);
+	camera->SetSpringArmLength(ArmLength -= 0.1f);
 }
 
 void BattleController::ZoomOut()
 {
-	camera->SetSpringArmLength(ArmLength += 0.05f);
+	camera->SetSpringArmLength(ArmLength += 0.1f);
 }
 
 void BattleController::JumpStart()
@@ -196,22 +210,22 @@ void BattleController::JumpEnd()
 		rigidbody->SetGravityEnable(true);
 		ply->ani_jumpR.SetInterval(0.05f);
 		bFalling = true;
-		std::cout << "jumpend" << std::endl;
+		
 	}
 	
 }
 
 void BattleController::OnOverlap(Collider* overlapComp, Collider* otherComp, Object* otherActor)
 {
-	rigidbody->AddPulse(Vector2D(0, -rigidbody->velocity.y));
-	std::cout << "collide" << std::endl;
+	/*rigidbody->AddPulse(Vector2D(0, -rigidbody->velocity.y));*/
+	
 	
 }
 
 void BattleController::EndOverlap(Collider* overlapComp, Collider* otherComp, Object* otherActor)
 {
 	/*rigidbody->AddPulse(Vector2D(0, 300.f));*/
-	std::cout << "leave" << std::endl;
+	
 	
 }
 
@@ -229,6 +243,15 @@ void BattleController::Land(Collider* hitComp, Collider* otherComp, Object* othe
 	
 	
 	
+}
+
+void BattleController::Rotate_O()
+{
+	shale->AddRotation(5.f);
+}
+
+void BattleController::Rotate_L()
+{
 }
 
 

@@ -8,6 +8,7 @@
 #include"BattleController.h"
 #include"GameStatics.h"
 #include"ColliderManager.h"
+#include<chrono>
 
 
 
@@ -65,11 +66,27 @@ int main() {
 	
 	
 	Engine::Init();
+	using clock = std::chrono::high_resolution_clock;
+	auto last = clock::now();
 
-	timeSetEvent(UINT(DELTA_TIME * 1000), 1, timecallback, NULL, TIME_CALLBACK_FUNCTION | TIME_PERIODIC);//创建回调函数，开辟线程
-	timeSetEvent(1, 1, timecallback_, NULL, TIME_CALLBACK_FUNCTION | TIME_PERIODIC);
+	/*timeSetEvent(UINT(DELTA_TIME * 1000), 1, timecallback, NULL, TIME_CALLBACK_FUNCTION | TIME_PERIODIC);
+	timeSetEvent(1, 1, timecallback_, NULL, TIME_CALLBACK_FUNCTION | TIME_PERIODIC);*/
+	while (true) {
+		auto now = clock::now();
+		std::chrono::duration<float> delta = now - last;
+		last = now;
+		
+		Engine::Tick();
+		Engine::Tick_();
 
-	Sleep(INFINITE);
+		float frameTime = delta.count(); // 秒
+		float targetFrameTime = 1.0f / 120.0f;
+		if (frameTime < targetFrameTime) {
+			Sleep(DWORD((targetFrameTime - frameTime) * 1000));
+		}
+	}
+
+	
 
 	return 0;
 }

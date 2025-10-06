@@ -25,9 +25,7 @@ class Player :public Sprite {
 	AnimationDelegate jumptofall;
 
 	void OnOverlap(Collider* overlapComp, Collider* otherComp, Object* otherActor) {
-		std::cout << "ok" << std::endl;
-		std::cout << int(overlapComp->GetType()) << std::endl;
-		std::cout << int(otherComp->GetType()) << std::endl;
+		
 	};
 public:
 	Player() {
@@ -108,5 +106,16 @@ public:
 		ani_jumpR.SetInterval(0.05f);
 		animator->SetNode("player_fall");
 		std::cout << "setnode" << std::endl;
+	}
+};
+
+class Shale :public Object {
+public:
+	BoxCollider* collider;
+	Shale() {
+		collider = ConstructComponent<BoxCollider>();
+		collider->SetSize({ 40,300 });
+		collider->SetType(CollisionType::attackbox);
+		collider->SetCollisionMode(CollisionMode::Collision);
 	}
 };

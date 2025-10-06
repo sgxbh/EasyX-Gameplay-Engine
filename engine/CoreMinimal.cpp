@@ -4,9 +4,18 @@
 #include"Controller.h"
 #include"Camera.h"
 #include"Collider.h"
+#include "RigidBody.h"
 #include"Math.h"
 #include"UserInterface.h"
+#include"QuadTree.h"
 
+
+
+template<>
+std::atomic<size_t> QuadTree<Collider>::allocCount{ 0 };
+
+template<>
+std::atomic<size_t> VectorPool<Collider>::Wrapper::allocCount{ 0 };
 
 World mainWorld{};
 
@@ -30,10 +39,14 @@ void SceneComponent::process_Destruct()
 Vector2D SceneComponent::GetWorldPosition() const
 {
 	if (parent) {
-		return parent->GetWorldPosition() + transform.position;
+		
+		return parent->GetWorldPosition() + Vector2D::RotateVector(parent->GetWorldRotation() + GetLocalRotation(), transform.position );
 	}
 	else {
-		if (pOwner)return pOwner->GetWorldPosition();
+		if (pOwner) {
+			if (pOwner->root != this) { return pOwner->GetWorldPosition() + GetLocalPosition(); }
+			else { return  pOwner->GetWorldPosition(); }
+		}
 		else return GetLocalPosition();
 	}
 }
@@ -44,7 +57,10 @@ float SceneComponent::GetWorldRotation() const
 		return parent->GetWorldRotation() + transform.rotation;
 	}
 	else {
-		if (pOwner)return pOwner->GetWorldRotation();
+		if (pOwner) {
+			if (pOwner->root != this) { return pOwner->GetWorldRotation() + GetLocalRotation(); }
+			else { return  pOwner->GetWorldRotation(); }
+		}
 		else return GetLocalRotation();
 	}
 }
@@ -117,12 +133,14 @@ void Object::Destroy()
 		}
 		mainWorld.GameObjects_to_delete.insert(current_obj);
 	}
+
+	
 }
 
 Vector2D Object::GetWorldPosition() const
 {
 	if (parent) {
-		return parent->GetWorldPosition() + GetLocalPosition();
+		return parent->GetWorldPosition() + Vector2D::RotateVector(parent->GetWorldRotation() + GetLocalRotation(), GetLocalPosition());
 	}
 	else return GetLocalPosition();
 	
@@ -155,21 +173,16 @@ void World::Update()
 	
 	ProcessColliderZones();
 
-	for (auto& obj : GameObjects) {
+	for (Object* obj : GameObjects) {
 		obj->Update();
 	}
 
-	for (auto& obj : GameObjects_to_add) {
-		GameObjects.insert(obj);
-		obj->BeginPlay();
+	for (auto& rig : RigidBodies)
+	{
+		rig->ApplyPendingVelocity();
 	}
-	GameObjects_to_add.clear();
 
-	for (auto& obj : GameObjects_to_delete) {
-		GameObjects_to_delete.erase(obj);
-		delete obj;
-	}
-	GameObjects_to_delete.clear();
+	
 
 	for (auto& obj : GameUIs) {
 		obj->Update();
@@ -186,6 +199,29 @@ void World::Update()
 	}
 
 	currentLevel->Update();
+
+	for (auto& obj : GameObjects_to_add) {
+		GameObjects.insert(obj);
+		obj->BeginPlay();
+	}
+	GameObjects_to_add.clear();
+
+	for (auto& obj : GameObjects_to_delete) {
+
+		if (obj) {
+			GameObjects.erase(obj);
+			delete obj;
+		}
+		
+	}
+	GameObjects_to_delete.clear();
+
+	
+	std::cout << "VectorPool<Collider>::Wrapper allocCount: " << VectorPool<Collider>::Wrapper::allocCount.load() << std::endl;
+
+	
+	
+	/*VectorPool<Collider>::Wrapper::allocCount=0;*/
 }
 
 void World::Update_()
@@ -201,6 +237,7 @@ void World::Render()
 	}
 	for (auto& obj : GameUIs)obj->ShowInfoBox();
 	Debug();
+	outtextxy(100, 0, "get");
 	
 	FlushBatchDraw();
 }
@@ -212,19 +249,79 @@ void World::Input()
 
 void World::ProcessColliderZones()
 {
-	for (auto& arr_i : ColliderZones)for (auto& arr_j : arr_i)if (!arr_j.empty())
-		for (auto& me : arr_j)for (auto& he : arr_j)if (he != me)me->Insert(he);
-
+	if (!TreeRoot)TreeRoot = QuadTree<Collider>::CreateRoot();
+	
 	for (auto& it : GameColliders)it->Erase();
+	
+
+	TreeRoot->Clear();
+	int top = INT_MAX;
+	int bottom = INT_MIN;
+	int left = INT_MAX;
+	int right = INT_MIN;
+
+	for (auto& col : GameColliders)
+	{
+		col->ReSetRect();
+		int colLeft = int(col->GetWorldPosition().x - col->Rwidth / 2);
+		int colRight = int(col->GetWorldPosition().x + col->Rwidth / 2);
+		int colBottom = int(col->GetWorldPosition().y + col->Rheight / 2);
+		int colTop = int(col->GetWorldPosition().y - col->Rheight / 2);
+
+		if (colLeft < left) left = colLeft;
+		if (colRight > right) right = colRight;
+		if (colBottom > bottom) bottom = colBottom;
+		if (colTop < top) top = colTop;
+	}
+
+	Vector2D rootCenter;
+	rootCenter.x = (left + right) / 2.0f;
+	rootCenter.y = (bottom + top) / 2.0f;
+
+	int width = right - left;
+	int height = bottom-top;
+	int rootSize = max(width, height);
+
+	// 设置根节点
+	TreeRoot->InitRect(rootCenter, rootSize);
+
+	for(auto& col : GameColliders)
+	{
+		TreeRoot->Insert(col);
+	}
+	ColliderInTree(TreeRoot);
+}
+
+void World::ColliderInTree(QuadTree<class Collider>* root)
+{
+	if (root->IsLeaf)
+	{
+		for (Collider* me : root->objects->vec)
+		{
+			for (Collider* he : root->objects->vec)
+			{
+				if (he != me)me->Insert(he);
+			}
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			ColliderInTree(root->children[i]);
+		}
+	}
 }
 
 void World::Debug()
 {
 	for (auto& obj : GameColliders)
-		obj->DrawDebugLine();
+		if(obj)obj->DrawDebugLine();
+		
 	for (auto& obj : GameObjects) {
-		obj->DrawDebugPosition();
+		if (obj)obj->DrawDebugPosition();
 	}
+	if (TreeRoot)TreeRoot->DrawDebug();
 	
 	
 	static int FPS = 0;
@@ -237,9 +334,9 @@ void World::Debug()
 		FPSClock->Reset();
 		num = 0;
 	}
-	Characters mycharacters;
+	/*Characters mycharacters;
 	mycharacters.SetCharacters("$0ŷҮ1\n$3aaaaaaaaaaa!");
-	mycharacters.PrintCharacters({ 300, 200 }, CharactersPattern::Left);
+	mycharacters.PrintCharacters({ 300, 200 }, CharactersPattern::Left);*/
 }
 
 void Level::Update()

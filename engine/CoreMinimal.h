@@ -124,7 +124,7 @@ protected:
 	class Object* pOwner = nullptr;
 	
 public:
-	
+	virtual ~Component() {};
 	
 	virtual void Update() override {};
 
@@ -176,6 +176,10 @@ class SceneComponent :public Component {
 	
 
 public:
+	virtual ~SceneComponent() {
+		
+	}
+	
 	virtual void Update()override {};
 
 	void AttachTo(SceneComponent* par);
@@ -193,12 +197,12 @@ public:
 	float GetWorldRotation() const;
 	Vector2D GetWorldScale() const;
 
-	void SetLocalPosition(const Vector2D& pos) { transform.position = pos; }
+	virtual void SetLocalPosition(const Vector2D& pos) { transform.position = pos; }
 	void SetLocalRotation(float rot) { transform.rotation = rot; }
 	void SetLocalScale(const Vector2D& scale) { transform.scale = scale; };
 
-	void AddPosition(const Vector2D& pos) { transform.position += pos; }
-	void AddRotation(float rot) { transform.rotation += rot; }
+	virtual void AddPosition(const Vector2D& pos) { transform.position += pos; }
+	virtual void AddRotation(float rot) { transform.rotation += rot; }
 };
 
 
@@ -208,14 +212,19 @@ class Object :public Base {
 	Object* parent = nullptr;
 	std::unordered_set<Component*>components;
 	std::unordered_set<Component*>::iterator components_iter;
+	
 protected:
-	SceneComponent* const root= new SceneComponent;
+	
 	
 public:
 	Object() { root->SetOwner(this); }
+	SceneComponent* const root = new SceneComponent;
 	
 	virtual ~Object() {
-		for (auto& com : components)delete com;
+		for (Component* com : components)
+		{
+			delete com;
+		}
 		delete root;
 	}
 
@@ -311,6 +320,9 @@ struct ColliderSort {
 	bool operator()(const class Collider* a, const class Collider* b)const;
 };
 
+template<typename T>
+class QuadTree;
+
 class World{
 	friend class Engine;
 	friend class Timer;
@@ -329,6 +341,8 @@ class World{
 	friend class Widget;
 	friend class UserInterface;
 	friend class Button;
+	friend class RigidBody;
+	friend class QuadTree<class Collider>;
 	friend void Object::Destroy();
 	
 	/*资源管理器*/
@@ -342,6 +356,7 @@ class World{
 	
 	/*场景对象、UI、计时容器*/
 	std::unordered_set<Object*>GameObjects;
+	std::unordered_set<class RigidBody*>RigidBodies;
 	std::vector<Object*>GameObjects_to_add;
 	std::unordered_set<Object*>GameObjects_to_delete;
 	std::unordered_set<class UserInterface*>GameUIs;
@@ -352,6 +367,7 @@ class World{
 	std::set<class LayerInterface*,LayerSort>GameRenderers;
 	std::unordered_set<class Collider*>GameColliders;
 	std::set<class Collider*, ColliderSort>ColliderZones[16][9];
+	QuadTree<class Collider>* TreeRoot;
 	std::set<class LayerInterface*, LayerSort>UIDetectZones[16][9];
 
 	/*游戏单例对象*/
@@ -370,6 +386,8 @@ class World{
 	void Input();
 
 	void ProcessColliderZones();
+
+	void ColliderInTree(QuadTree<class Collider>* root);
 	
 	void Debug();
 };

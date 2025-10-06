@@ -10,7 +10,8 @@ enum class CollisionType :uint8_t
 	attackbox,
 	b,
 	player,
-	ground
+	ground,
+	WorldStatic
 };
 
 

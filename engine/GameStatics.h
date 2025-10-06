@@ -21,7 +21,7 @@ public:
 
 
 
-template<typename T>//模板函数要定义在声明的同一个文件，而inline保证定义在头文件的函数不会重复定义
+template<typename T>
 inline T* GameStatics::CreateObject(Vector2D pos)
 {
 	T* pObj = new T;

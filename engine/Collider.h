@@ -3,6 +3,7 @@
 #include<functional>
 #include"Delegate.h"
 #include"ColliderManager.h"
+#include"AreaInterFace.h"
 
 enum class CollisionMode:uint8_t{None,Trigger,Collision};
 
@@ -17,10 +18,11 @@ struct HitResult
 	Vector2D ImpactNormal;
 	Object* HitObject;
 	Component* HitComponent;
+	float penetration=0;
 
 	HitResult() :ImpactPoint(0, 0), ImpactNormal(0, 0), HitObject(nullptr), HitComponent(nullptr) {}
-	HitResult(const Vector2D& impactPoint, const Vector2D& impactNormal, Object* hitObject, Component* hitComponent)
-		:ImpactPoint(impactPoint), ImpactNormal(impactNormal), HitObject(hitObject), HitComponent(hitComponent) {}
+	HitResult(const Vector2D& impactPoint, const Vector2D& impactNormal, Object* hitObject, Component* hitComponent,float penetration)
+		:ImpactPoint(impactPoint), ImpactNormal(impactNormal), HitObject(hitObject), HitComponent(hitComponent), penetration(penetration){}
 };
 
 //碰撞委托
@@ -32,14 +34,20 @@ DECLARE_MULTI_PARAM_MULTICAST_DELEGATE_CLASS(CollisionOverlapDelegate, Collider*
 DECLARE_MULTI_PARAM_MULTICAST_DELEGATE_CLASS(CollisionHitDelegate, Collider*, Collider*, Object*, Vector2D, const HitResult&)
 
 
-class Collider:public SceneComponent
+class Collider :public SceneComponent, public AreaInterFace
 {
 	friend class Controller;
 	friend class RigidBody;
 public:
 	enum ColliderShap{Circle,Box};
-	Collider() { mainWorld.GameColliders.insert(this); }
-	virtual ~Collider() { mainWorld.GameColliders.erase(this); Clear();}
+	Collider() { 
+		mainWorld.GameColliders.insert(this);
+	}
+	virtual ~Collider() {
+		
+		mainWorld.GameColliders.erase(this);
+		Clear();
+	}
 	virtual void Update()override;
 	virtual void BeginPlay()override;
 
@@ -79,6 +87,9 @@ public:
 	static HitResult collisionHitCircleToCircle(Collider* c1, Collider* c2);
 	static HitResult collisionHitCircleToBox(Collider* c1, Collider* c2);
 	static HitResult collisionHitBoxToBox(Collider* c1, Collider* c2);
+
+	virtual void SetLocalPosition(const Vector2D& position)override;
+	virtual void ReSetRect() = 0;
 protected:
 	ColliderShap shape = Circle;
 	virtual bool CollisionJudge(Collider* another) ;
@@ -109,12 +120,18 @@ class CircleCollider final :public Collider {
 	
 public:
 	CircleCollider() { shape = Circle; }
+	~CircleCollider() override {
+		
+	}
 	virtual void Update()override;
 	virtual void DrawDebugLine()override;
 	float GetRadius()const { return radius; }
-	void SetRadius(float r) { radius = r; radius_ini = r / sqrtf(GetWorldScale().x * GetWorldScale().y); }
+	void SetRadius(float r) { radius = r; radius_ini = r / sqrtf(GetWorldScale().x * GetWorldScale().y); Rwidth = 2 * r; Rheight = 2 * r; }
 
 	virtual bool IsMouseOver() override;
+	
+	virtual void ReSetRect() override;
+	
 };
 
 class BoxCollider final :public Collider
@@ -130,15 +147,24 @@ public:
 	virtual void DrawDebugLine()override;
 	virtual bool IsMouseOver()override;
 	Vector2D GetSize()const { return size; }
-	void SetSize(Vector2D size) { this->size = size; size_ini = size / GetWorldScale(); }
+	void SetSize(Vector2D size) { this->size = size; size_ini = size / GetWorldScale(); Rwidth = size.x; Rheight = size.y; }
 
 	Rect GetRect()const { return rect; }
 
 	//获取重叠矩形宽高，需传入已经确定发生碰撞的两个碰撞器
 	static Vector2D GetOverlapRect(const Rect& r1, const Rect& r2);
+
+	virtual void ReSetRect();
+
+	std::vector<Vector2D> GetWorldVertices() const;
+
+	static void ProjectPolygon(const Vector2D& axis, const std::vector<Vector2D>& verts, float& min, float& max);
+	
 private:
 	Vector2D size = Vector2D(0, 0);
 	Vector2D size_ini = Vector2D(0, 0);
 	Rect rect;
+
+	
 };
 

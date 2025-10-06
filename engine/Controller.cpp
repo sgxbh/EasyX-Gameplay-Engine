@@ -7,6 +7,7 @@ Controller::Controller()
 {
 	camera = ConstructComponent<Camera>();
 	camera->AttachTo(root);
+	camera->SetLocalPosition({ 0,0 });
 	camera->SetMainCamera();
 	inputComponent = ConstructComponent<InputComponent>();
 }
